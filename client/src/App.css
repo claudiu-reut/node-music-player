@@ -16,7 +16,7 @@ justify-content: center;
   max-width: 600px;
   margin: auto;
   padding-bottom: 2em;
- 
+ padding-left: 4.5rem;
   border-radius: 10px;
 }
 .inside{
@@ -28,6 +28,8 @@ padding: auto;
 }
 .musicCover {
   border-radius: 10%;
+  width: 80%;
+  height: 80%;
 }
 
 .playButton {
