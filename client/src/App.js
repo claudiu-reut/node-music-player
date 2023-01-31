@@ -8,16 +8,23 @@ function App() {
   const [artist,setArtist]=useState('');
   const [name,setName]=useState('')
   const [year,setYear]=useState('');
+  const [audio,setAudio]=useState('');
  const get_song=async ()=>{
   try{
-    const response=await axios.get('http://localhost:4000/metadata');
-    const res=await axios.get('http://localhost:4000/image')
+ 
+    const response=await axios.get('http://localhost:4000/audio');
+  
+    
     const metadata=response.data
-    setArtist(metadata.artist);
-    setName(metadata.title);
-    setYear(metadata.recordingTime);
-    if (res.data) setImage(`data:image/jpeg;base64,${res.data}`)
+    
+    setArtist(metadata.tags.artist);
+    setName(metadata.tags.title);
+    setYear(metadata.tags.recordingTime);
+    setAudio(metadata.audio)
+  
+    if (metadata.image) setImage(`data:image/jpeg;base64,${metadata.image}`)
     else setImage('https://cdn-icons-png.flaticon.com/512/27/27223.png')
+    
   }catch(err){
     console.log(err);
   }
@@ -42,15 +49,16 @@ function App() {
       </div>
       <div>
       
-    <audio controls>
+    <audio controls src={`data:audio/mpeg;base64,${audio}`}/>
         
-        <source src="http://localhost:4000/audio" type="audio/mpeg"/>
-      Your browser does not support the audio element.
-      </audio>
+        
+      
+     
       </div>
       </div>
+      
     </div>
-
+   
 
 
   );

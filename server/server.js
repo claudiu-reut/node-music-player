@@ -1,7 +1,10 @@
 const express = require('express');
 const fs = require("fs")
 var cors = require('cors');
+const path = require("path");
 
+var name='sample'
+var pathname='./music/sample.mp3'
 
 
 const app =express();
@@ -14,47 +17,38 @@ const image={
     id: 1
   }, // See https://en.wikipedia.org/wiki/ID3#ID3v2_embedded_image_extension
   description: "image description",
-  imageBuffer: fs.readFileSync('cover.jpg')
+  imageBuffer: fs.readFileSync(`./music/${name}.jpg`)
 }
-const tags = NodeID3.read('./sample.mp3');
-tags.image=image;
-NodeID3.write(tags,'./sample.mp3');
+
+
 app.get('/audio',(req,res)=>{
-    const range = req.headers.range;
-    const path = './sample.mp3'
-    const size = fs.statSync(path).size;
-
-    const chunkSize  = 1 + 1e+6 //1MB
-    const start  = Number(range.replace(/\D/g,''));
-    const end = Math.min(start + chunkSize,size-1);
-
-    const contentLength = end-start+1;
-    const headers = {
-        "Content-Range": `bytes ${start}-${end}/${size}`,
-        "Accept-Ranges": "bytes",
-        "Content-Length": contentLength,
-        "Content-Type": "audio/mpeg"
-    }
-    res.writeHead(206, headers);
-
-    const stream = fs.createReadStream(path, { start, end })
-    stream.pipe(res);
-})
-app.get('/image',(req,res)=>{
     try{
-    const tags = NodeID3.read('./sample.mp3')
-NodeID3.read('./sample.mp3', function(err, tags) {
-    res.status(200).json(tags.image.imageBuffer.toString('base64'));
-})
-    }catch(err){console.log(err);}
+    fs.readdir(path.join(process.cwd(), "music"),async (err, files) => {
+
+        //console.log(err, files)
+    
+        let max = files.length - 1;
+        let min = 0;
+    
+        let index = Math.round(Math.random() * (max - min) + min);
+        let file = files[index];
+        name=await file.toString().split('.')[0];
+        pathname
+        console.log("Random file is", name);
+        const tags = NodeID3.read(`./music/${name}.mp3`)
+        const imageBuffer = fs.readFileSync(`./music/${name}.jpg`)
+        fs.readFile(`./music/${name}.mp3`, function(err, result) {
+       
+            const body={
+                tags:tags,
+                audio:result.toString('base64'),
+                image:imageBuffer.toString('base64')
+            }
+            
+            res.status(200).json(body)
+          });
+    });
+}catch(err){console.log(err);}
+     
 })
 
-app.get('/metadata',(req,res)=>{
-    try{
-    const tags = NodeID3.read('./sample.mp3')
-NodeID3.read('./sample.mp3', function(err, tags) {
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    res.status(200).json(tags)
-})
-    }catch(err){console.log(err);}
-})
