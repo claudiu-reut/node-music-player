@@ -49,8 +49,9 @@ function App() {
       </div>
       <div>
       
-    <audio controls src={`data:audio/mpeg;base64,${audio}`}/>
+    <audio controls autoplay src={`data:audio/mpeg;base64,${audio}`}  />
         
+ 
         
       
      

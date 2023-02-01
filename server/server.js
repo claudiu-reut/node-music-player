@@ -26,13 +26,14 @@ app.get('/audio',(req,res)=>{
     fs.readdir(path.join(process.cwd(), "music"),async (err, files) => {
 
         //console.log(err, files)
-    
+        
         let max = files.length - 1;
         let min = 0;
     
         let index = Math.round(Math.random() * (max - min) + min);
         let file = files[index];
-        name=await file.toString().split('.')[0];
+        const lastIndex = file.toString().lastIndexOf('.')
+        name=await file.toString().slice(0,lastIndex);
         pathname
         console.log("Random file is", name);
         const tags = NodeID3.read(`./music/${name}.mp3`)
